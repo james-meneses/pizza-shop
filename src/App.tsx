@@ -1,6 +1,10 @@
-import { useState } from "react";
-import "./App.css";
+import { Button } from "./components/ui/button";
+import "./index.css";
 
 export function App() {
-  return <h1>Hello world</h1>;
+  return (
+    <div className="flex justify-center items-center h-screen">
+      <Button className="">Enviar</Button>
+    </div>
+  );
 }
