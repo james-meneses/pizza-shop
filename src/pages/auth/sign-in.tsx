@@ -5,6 +5,8 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 const signInForm = z.object({
   email: z.string().email(),
@@ -13,6 +15,8 @@ const signInForm = z.object({
 type SignInForm = z.infer<typeof signInForm>;
 
 export function SignIn() {
+  const { toast } = useToast();
+
   const {
     register,
     handleSubmit,
@@ -23,6 +27,20 @@ export function SignIn() {
     console.log(data);
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    toast({
+      title: "Enviamos um link de autenticação para seu e-mail.",
+      variant: "success",
+      action: (
+        <ToastAction
+          className="border-none bg-green-900 text-background hover:bg-green-800"
+          onClick={() => handleSignIn(data)}
+          altText="Reenviar"
+        >
+          Reenviar
+        </ToastAction>
+      ),
+    });
   }
 
   return (
