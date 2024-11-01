@@ -65,6 +65,7 @@ export function RevenueChart() {
               }
               width={80}
             />
+            <CartesianGrid vertical={false} className="stroke-muted" />
 
             <Line
               type="linear"
