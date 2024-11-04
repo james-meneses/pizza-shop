@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { Link, useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { registerRestaurant } from "@/api/register-restaurant";
 
 const signUpForm = z.object({
   restaurantName: z.string(),
@@ -28,10 +30,20 @@ export function SignUp() {
     formState: { isSubmitting },
   } = useForm<SignUpForm>();
 
+  const { mutateAsync: registerRestaurantFn } = useMutation({
+    mutationFn: registerRestaurant,
+  });
+
   async function handleSignUp(data: SignUpForm) {
     try {
       console.log(data);
 
+      await registerRestaurantFn({
+        restaurantName: data.restaurantName,
+        managerName: data.managerName,
+        email: data.email,
+        phone: data.phone,
+      });
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       toast({
@@ -39,8 +51,8 @@ export function SignUp() {
         variant: "success",
         action: (
           <ToastAction
-            className="border-none bg-green-900 text-background hover:bg-green-800"
-            onClick={() => navigate("/sign-in")}
+            className="border-none bg-green-900 text-foreground hover:bg-green-800"
+            onClick={() => navigate(`/sign-in?email=${data.email}`)}
             altText="Login"
           >
             Login
