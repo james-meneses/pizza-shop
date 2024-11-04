@@ -13,6 +13,7 @@ import { getProfile } from "@/api/get-profile";
 import { getManagedRestaurant } from "@/api/get-managed-restaurant";
 import { Skeleton } from "./ui/skeleton";
 import { Dialog, DialogTrigger } from "./ui/dialog";
+import { StoreProfileDialog } from "./store-profile-dialog";
 
 export function AccountMenu() {
   const { data: profile, isLoading: isLoadingProfile } = useQuery({
@@ -73,6 +74,8 @@ export function AccountMenu() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <StoreProfileDialog />
     </Dialog>
   );
 }
