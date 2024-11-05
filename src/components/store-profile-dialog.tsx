@@ -24,7 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const storeProfileSchema = z.object({
   name: z.string().min(1),
-  description: z.string(),
+  description: z.string().nullable(),
 });
 
 type StoreProfileSchema = z.infer<typeof storeProfileSchema>;
@@ -52,22 +52,38 @@ export function StoreProfileDialog() {
     },
   });
 
+  const updateManagedRestaurantCache = ({
+    name,
+    description,
+  }: StoreProfileSchema) => {
+    const cached = queryClient.getQueryData<GetManagedRestaurantResponse>([
+      "managed-restaurant",
+    ]);
+
+    if (cached) {
+      queryClient.setQueryData<GetManagedRestaurantResponse>(
+        ["managed-restaurant"],
+        {
+          ...cached,
+          name: name,
+          description: description,
+        },
+      );
+    }
+
+    return { cached };
+  };
+
   const { mutateAsync: updateStoreProfile } = useMutation({
     mutationFn: updateProfile,
-    onSuccess(data, variables) {
-      const cached = queryClient.getQueryData<GetManagedRestaurantResponse>([
-        "managed-restaurant",
-      ]);
+    onMutate({ name, description }) {
+      const { cached } = updateManagedRestaurantCache({ name, description });
 
-      if (cached) {
-        queryClient.setQueryData<GetManagedRestaurantResponse>(
-          ["managed-restaurant"],
-          {
-            ...cached,
-            name: variables.name,
-            description: variables.description,
-          },
-        );
+      return { previousProfile: cached };
+    },
+    onError(error, variables, context) {
+      if (context?.previousProfile) {
+        updateManagedRestaurantCache(context.previousProfile);
       }
     },
   });
