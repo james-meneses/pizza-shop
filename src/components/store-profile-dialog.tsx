@@ -11,7 +11,10 @@ import {
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
-import { getManagedRestaurant } from "@/api/get-managed-restaurant";
+import {
+  getManagedRestaurant,
+  GetManagedRestaurantResponse,
+} from "@/api/get-managed-restaurant";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -51,8 +54,21 @@ export function StoreProfileDialog() {
 
   const { mutateAsync: updateStoreProfile } = useMutation({
     mutationFn: updateProfile,
-    onSuccess: () => {
-      queryClient.invalidateQueries(["managed-restaurant"]);
+    onSuccess(data, variables) {
+      const cached = queryClient.getQueryData<GetManagedRestaurantResponse>([
+        "managed-restaurant",
+      ]);
+
+      if (cached) {
+        queryClient.setQueryData<GetManagedRestaurantResponse>(
+          ["managed-restaurant"],
+          {
+            ...cached,
+            name: variables.name,
+            description: variables.description,
+          },
+        );
+      }
     },
   });
 
